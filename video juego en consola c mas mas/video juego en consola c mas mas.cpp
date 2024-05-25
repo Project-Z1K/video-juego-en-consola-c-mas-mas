@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <vector>
 #include <chrono>
+#include <fstream>
 
 using namespace std;
 
@@ -13,6 +14,7 @@ vector<int> obstacles; // posiciones de los obstáculos
 bool gameOver;
 int score;
 int level;
+int highScore;
 
 void gotoXY(int x, int y) {
     COORD coord;
@@ -43,6 +45,13 @@ void setup() {
     obstacles.push_back(width - 1);
     score = 0;
     level = 1;
+    ifstream file("highscore.txt");
+    if (file.is_open()) {
+        file >> highScore;
+        file.close();
+    } else {
+        highScore = 0;
+    }
 }
 
 void draw(char screen[height][width]) {
@@ -50,9 +59,11 @@ void draw(char screen[height][width]) {
         for (int j = 0; j < width; j++) {
             if (i == y && j == x) {
                 screen[i][j] = 'O'; // el jugador
-            } else if (find(obstacles.begin(), obstacles.end(), j) != obstacles.end() && i == height - 1) {
+            }
+            else if (find(obstacles.begin(), obstacles.end(), j) != obstacles.end() && i == height - 1) {
                 screen[i][j] = '#'; // obstáculo
-            } else {
+            }
+            else {
                 screen[i][j] = ' ';
             }
         }
@@ -61,7 +72,7 @@ void draw(char screen[height][width]) {
 
 void render(char screen[height][width]) {
     gotoXY(0, 0);
-    cout << "Nivel: " << level << "   Puntuacion: " << score << endl;
+    cout << "Nivel: " << level << "   Puntuacion: " << score << "   Puntuacion mas alta: " << highScore << endl;
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             cout << screen[i][j];
@@ -121,7 +132,8 @@ void menu() {
         cout << "=== Geometry Dash by Andreuu2k ===\n";
         cout << "1. Jugar\n";
         cout << "2. Visitar canal de YouTube\n";
-        cout << "3. Salir\n";
+        cout << "3. Puntuacion mas alta\n";
+        cout << "4. Salir\n";
         cout << "Elige una opcion: ";
         choice = _getch();
 
@@ -140,6 +152,14 @@ void menu() {
             system("cls");
             cout << "Game Over!" << endl;
             cout << "Tu puntuacion final es: " << score << endl;
+            if (score > highScore) {
+                ofstream file("highscore.txt");
+                if (file.is_open()) {
+                    file << score;
+                    file.close();
+                    cout << "¡Nueva puntuacion mas alta!" << endl;
+                }
+            }
             Sleep(2000);
             break;
         }
@@ -147,13 +167,17 @@ void menu() {
             ShellExecute(0, 0, L"https://www.youtube.com/@Andreuu2k", 0, 0, SW_SHOW);
             break;
         case '3':
+            cout << "Puntuacion mas alta: " << highScore << endl;
+            system("pause");
+            break;
+        case '4':
             break;
         default:
             cout << "Opcion no valida, intentalo de nuevo." << endl;
             Sleep(1000);
             break;
         }
-    } while (choice != '3');
+    } while (choice != '4');
 }
 
 int main() {
