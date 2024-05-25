@@ -66,14 +66,24 @@ void render(char screen[height][width]) {
     cout << "Nivel: " << level << "   Puntuacion: " << score << "   Puntuacion mas alta: " << highScore << endl;
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            cout << screen[i][j];
+            if (screen[i][j] == 'O') {
+                // Color para el jugador (Amarillo)
+                cout << "\033[1;33m" << screen[i][j] << "\033[0m";
+            }
+            else if (screen[i][j] == '#') {
+                // Color para los obstáculos (Rojo)
+                cout << "\033[1;31m" << screen[i][j] << "\033[0m";
+            }
+            else {
+                cout << screen[i][j];
+            }
         }
         cout << endl;
     }
 }
 
 void input() {
-    if (GetAsyncKeyState(VK_SPACE) && y == height - 1) {
+    if (GetAsyncKeyState(VK_SPACE) & 0x8000 && y == height - 1) {
         y -= 3; // salta
     }
 }
