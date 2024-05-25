@@ -85,7 +85,7 @@ void render(char screen[height][width]) {
 
 void input() {
     if (GetAsyncKeyState(VK_SPACE) & 0x8000 && y == height - 1) {
-        y -= 3; // salta v2
+        y -= 3; // salta
     }
 }
 
@@ -180,7 +180,7 @@ void menu() {
 }
 
 int main() {
-    SetConsoleTitleA("Geometry Dash by Andreuu2k 2.0");
+    SetConsoleTitleA("Geometry Dash by Andreuu2k");
     menu();
     return 0;
 }
