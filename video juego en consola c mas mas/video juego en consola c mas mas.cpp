@@ -1,9 +1,10 @@
 #include <iostream>
-#include <conio.h> // Incluir la biblioteca conio.h para _getch()
 #include <windows.h>
 #include <vector>
 #include <chrono>
+#include <conio.h> // Incluir la biblioteca conio.h para _getch()
 #include <fstream>
+#include <thread>
 
 using namespace std;
 
@@ -84,7 +85,7 @@ void render(char screen[height][width]) {
 
 void input() {
     if (GetAsyncKeyState(VK_SPACE) & 0x8000 && y == height - 1) {
-        y -= 3; // salta
+        y -= 3; // salta v2
     }
 }
 
@@ -145,7 +146,7 @@ void menu() {
                 render(screen);
                 input();
                 logic();
-                Sleep(50); // reducir el tiempo de espera entre fotogramas para mejorar la fluidez
+                this_thread::sleep_for(chrono::milliseconds(50)); // reducir el tiempo de espera entre fotogramas para mejorar la fluidez
             }
             clearScreen();
             cout << "Game Over!" << endl;
@@ -179,7 +180,7 @@ void menu() {
 }
 
 int main() {
-    SetConsoleTitleA("Geometry Dash by Andreuu2k");
+    SetConsoleTitleA("Geometry Dash by Andreuu2k 2.0");
     menu();
     return 0;
 }
