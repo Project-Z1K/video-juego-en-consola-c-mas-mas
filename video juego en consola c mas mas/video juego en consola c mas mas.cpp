@@ -49,7 +49,8 @@ void setup() {
     if (file.is_open()) {
         file >> highScore;
         file.close();
-    } else {
+    }
+    else {
         highScore = 0;
     }
 }
