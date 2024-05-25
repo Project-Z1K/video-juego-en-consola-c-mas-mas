@@ -11,6 +11,8 @@ const int height = 20;
 int x, y; // posición del jugador
 vector<int> obstacles; // posiciones de los obstáculos
 bool gameOver;
+int score;
+int level;
 
 void gotoXY(int x, int y) {
     COORD coord;
@@ -19,12 +21,28 @@ void gotoXY(int x, int y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
+void clearScreen() {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD coordScreen = { 0, 0 };
+    DWORD cCharsWritten;
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    DWORD dwConSize;
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
+    dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+    FillConsoleOutputCharacter(hConsole, ' ', dwConSize, coordScreen, &cCharsWritten);
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
+    FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
+    SetConsoleCursorPosition(hConsole, coordScreen);
+}
+
 void setup() {
     gameOver = false;
     x = 10;
     y = height - 1;
     obstacles.clear();
     obstacles.push_back(width - 1);
+    score = 0;
+    level = 1;
 }
 
 void draw(char screen[height][width]) {
@@ -32,11 +50,9 @@ void draw(char screen[height][width]) {
         for (int j = 0; j < width; j++) {
             if (i == y && j == x) {
                 screen[i][j] = 'O'; // el jugador
-            }
-            else if (find(obstacles.begin(), obstacles.end(), j) != obstacles.end() && i == height - 1) {
+            } else if (find(obstacles.begin(), obstacles.end(), j) != obstacles.end() && i == height - 1) {
                 screen[i][j] = '#'; // obstáculo
-            }
-            else {
+            } else {
                 screen[i][j] = ' ';
             }
         }
@@ -45,6 +61,7 @@ void draw(char screen[height][width]) {
 
 void render(char screen[height][width]) {
     gotoXY(0, 0);
+    cout << "Nivel: " << level << "   Puntuacion: " << score << endl;
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             cout << screen[i][j];
@@ -83,6 +100,18 @@ void logic() {
     if (find(obstacles.begin(), obstacles.end(), x) != obstacles.end() && y == height - 1) {
         gameOver = true;
     }
+
+    // aumentar puntaje
+    score++;
+
+    // pasar al siguiente nivel si el puntaje alcanza cierto límite
+    if (score >= level * 100) {
+        level++;
+        // incrementar la velocidad de los obstáculos
+        for (int i = 0; i < obstacles.size(); i++) {
+            obstacles[i] -= level;
+        }
+    }
 }
 
 void menu() {
@@ -107,16 +136,10 @@ void menu() {
                 input();
                 logic();
                 Sleep(50); // reducir el tiempo de espera para mejorar la fluidez
-
-                auto end = chrono::steady_clock::now();
-                chrono::duration<double> elapsed_seconds = end - start;
-                if (elapsed_seconds.count() > 2.0) { // añadir un obstáculo cada 2 segundos
-                    obstacles.push_back(width - 1);
-                    start = chrono::steady_clock::now();
-                }
             }
             system("cls");
             cout << "Game Over!" << endl;
+            cout << "Tu puntuacion final es: " << score << endl;
             Sleep(2000);
             break;
         }
