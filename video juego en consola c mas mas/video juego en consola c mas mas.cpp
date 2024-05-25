@@ -1,5 +1,5 @@
 #include <iostream>
-#include <conio.h>
+#include <conio.h> // Incluir la biblioteca conio.h para _getch()
 #include <windows.h>
 #include <vector>
 #include <chrono>
@@ -24,17 +24,7 @@ void gotoXY(int x, int y) {
 }
 
 void clearScreen() {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD coordScreen = { 0, 0 };
-    DWORD cCharsWritten;
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    DWORD dwConSize;
-    GetConsoleScreenBufferInfo(hConsole, &csbi);
-    dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
-    FillConsoleOutputCharacter(hConsole, ' ', dwConSize, coordScreen, &cCharsWritten);
-    GetConsoleScreenBufferInfo(hConsole, &csbi);
-    FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
-    SetConsoleCursorPosition(hConsole, coordScreen);
+    system("cls");
 }
 
 void setup() {
@@ -72,7 +62,7 @@ void draw(char screen[height][width]) {
 }
 
 void render(char screen[height][width]) {
-    gotoXY(0, 0);
+    clearScreen();
     cout << "Nivel: " << level << "   Puntuacion: " << score << "   Puntuacion mas alta: " << highScore << endl;
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
@@ -83,14 +73,8 @@ void render(char screen[height][width]) {
 }
 
 void input() {
-    if (_kbhit()) {
-        switch (_getch()) {
-        case ' ':
-            if (y == height - 1) { // sólo puede saltar si está en el suelo
-                y -= 3; // salta
-            }
-            break;
-        }
+    if (GetAsyncKeyState(VK_SPACE) && y == height - 1) {
+        y -= 3; // salta
     }
 }
 
@@ -109,8 +93,11 @@ void logic() {
     }
 
     // verificar colisión
-    if (find(obstacles.begin(), obstacles.end(), x) != obstacles.end() && y == height - 1) {
-        gameOver = true;
+    for (int i = 0; i < obstacles.size(); i++) {
+        if (obstacles[i] == x && y == height - 1) {
+            gameOver = true;
+            break; // salimos del bucle tan pronto como encontramos una colisión
+        }
     }
 
     // aumentar puntaje
@@ -129,7 +116,7 @@ void logic() {
 void menu() {
     char choice;
     do {
-        system("cls");
+        clearScreen();
         cout << "=== Geometry Dash by Andreuu2k ===\n";
         cout << "1. Jugar\n";
         cout << "2. Visitar canal de YouTube\n";
@@ -148,9 +135,9 @@ void menu() {
                 render(screen);
                 input();
                 logic();
-                Sleep(50); // reducir el tiempo de espera para mejorar la fluidez
+                Sleep(50); // reducir el tiempo de espera entre fotogramas para mejorar la fluidez
             }
-            system("cls");
+            clearScreen();
             cout << "Game Over!" << endl;
             cout << "Tu puntuacion final es: " << score << endl;
             if (score > highScore) {
