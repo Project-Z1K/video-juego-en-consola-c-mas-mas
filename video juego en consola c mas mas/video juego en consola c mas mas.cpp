@@ -101,7 +101,7 @@ void menu() {
         choice = _getch();
 
         switch (choice) {
-            case '1':
+            case '1': {
                 setup();
                 auto start = chrono::steady_clock::now();
                 while (!gameOver) {
@@ -121,6 +121,7 @@ void menu() {
                 cout << "Game Over!" << endl;
                 Sleep(2000);
                 break;
+            }
             case '2':
                 ShellExecute(0, 0, L"https://www.youtube.com/@Andreuu2k", 0, 0, SW_SHOW);
                 break;
